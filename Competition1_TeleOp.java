@@ -120,9 +120,9 @@ public class Competition1_TeleOp extends LinearOpMode {
 
             // Use A down to put Team Marker down and Y to lift it up
             if (gamepad1.a)
-                    teamMarker.setPosition(.2);
+                    teamMarker.setPosition(.3);
             else if (gamepad1.y)
-                    teamMarker.setPosition(.4);
+                    teamMarker.setPosition(1);
 
             // Use X to put touch sensor up and B to put touch sensor down
             if (gamepad1.x)
