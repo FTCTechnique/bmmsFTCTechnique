@@ -64,13 +64,13 @@ public class CombinedAutoMission extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
-    //  private DcMotor leftBack = null;
-    //  private DcMotor rightBack = null;
+    private DcMotor leftBack = null;
+    private DcMotor rightBack = null;
     private DcMotor armDrive = null;
-    private Servo armServo = null;
-    private Servo markerServo = null;
-    //Servo servo; //Seems different from other examples
-    //double servoPosition = 0.0;
+    private Servo handServo = null;
+    private Servo teamMarker = null;
+    private Servo touchServo = null;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -82,18 +82,20 @@ public class CombinedAutoMission extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        //  leftBack = hardwareMap.get (DcMotor.class, "left_back");
-        //  rightBack = hardwareMap.get (DcMotor.class, "right_back");
+        leftBack = hardwareMap.get (DcMotor.class, "left_back");
+        rightBack = hardwareMap.get (DcMotor.class, "right_back");
         // pulleyMotorUp = hardwareMap.get(DcMotor.class, "pulley_up");
         // pulleyMotorDown = hardwareMap.get(DcMotor.class,"pulley_down" );
         //Initialize the DC Motor in the arm
         armDrive=hardwareMap.get(DcMotor.class,"elbow");
         //Initialize servos
-        armServo = hardwareMap.get(Servo.class, "arm_servo");
-        markerServo = hardwareMap.get(Servo.class, "marker_servo");
+        handServo = hardwareMap.get(Servo.class, "hand_servo");
+        teamMarker = hardwareMap.get(Servo.class, "team_marker");
+        touchServo = hardwareMap.get(Servo.class, "touch_servo");
         //Set servo position
-        armServo.setPosition(.8);
-        markerServo.setPosition(.8);
+        handServo.setPosition(.8);
+        teamMarker.setPosition(1);
+        touchServo.setPosition(1);
 
         // set the digital channel to input.
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
@@ -101,34 +103,35 @@ public class CombinedAutoMission extends LinearOpMode {
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        //leftBack.setDirection(DcMotor.Direction.FORWARD);
-        //rightBack.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
         // armDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // wait for the start button to be pressed.
         waitForStart();
 
-        // while the op mode is active, loop and read the light levels.
-        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+        // while the op mode is active, loop and read the touch sensor.
 
-        MoveArmUpTime(.2, 1000);
-        armServo.setPosition(0);
-        sleep(200);
-        MoveArmDownTime (.2, 1000);
+        //Lower Robot from Landing
+        //MoveArmUpTime(.2, 1000);
+        //handServo.setPosition(0);
+        //sleep(200);
+        //MoveArmDownTime (.2, 1000);
 
 
         while (opModeIsActive()) {
-
+            // Drive forward until touch sensor is pressed
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
             if (digitalTouch.getState() == true) {
                 telemetry.addData("Digital Touch", "Is Not Pressed");
-                DriveForward(.2);
+                DriveForwardTime(.2,1000); //CELINE
+                DriveForward(.1); //CELINE
 
             } else {
                 telemetry.addData("Digital Touch", "Is Pressed");
                 DriveBackwardTime(.2,1000);
-                TurnLeftTime(.4,2000);
+                TurnLeftTime(.4,2000); //CELINE
                 // DriveForward(.2);
                 //  markerServo.setPosition(0);
                 // DriveForwardTime(.2,1000);
@@ -156,10 +159,10 @@ public class CombinedAutoMission extends LinearOpMode {
             } else {
                 telemetry.addData("Digital Touch", "Is Pressed");
                 DriveBackwardTime(.2, 200);
-                markerServo.setPosition(0);
+                teamMarker.setPosition(.05); //CELINE
                 DriveBackwardTime(.2,1000);
-                markerServo.setPosition(1);
-                DriveBackwardTime(.2,5000);
+                teamMarker.setPosition(1);
+                DriveBackwardTime(.7,3000); //CELINE
                 stop();
                 break;
 
@@ -200,8 +203,8 @@ public class CombinedAutoMission extends LinearOpMode {
     private void DriveForward(double power) {
         leftDrive.setPower(power);
         rightDrive.setPower(power);
-        //leftBack.setPower(power);
-        //rightBack.setPower(power);
+        leftBack.setPower(power);
+        rightBack.setPower(power);
     }
     private void DriveForwardTime(double power,long time) throws InterruptedException {
         DriveForward(power);
@@ -210,8 +213,8 @@ public class CombinedAutoMission extends LinearOpMode {
     private void TurnLeft(double power)  {
         leftDrive.setPower(-power);
         rightDrive.setPower(power);
-        //leftBack.setPower(-power);
-        //rightBack.setPower(power);
+        leftBack.setPower(-power);
+        rightBack.setPower(power);
     }
     private void TurnLeftTime(double power,long time) throws InterruptedException {
         TurnLeft(power);
